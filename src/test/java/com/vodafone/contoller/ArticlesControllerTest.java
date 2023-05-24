@@ -70,8 +70,8 @@ class ArticlesControllerTest {
         mockMvc.perform(get("/v1/articles").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
-
-        // Verify mock service interaction
+//
+//        // Verify mock service interaction
         verify(articleService, times(1)).getAllArticles(anyInt(), anyInt());
         verifyNoMoreInteractions(articleService);
     }
@@ -109,7 +109,6 @@ class ArticlesControllerTest {
                         .andExpect(status().isCreated())
                         .andExpect(jsonPath("$.name").value("test"))
                         .andExpect(jsonPath("$.id").value(1));;
-
     }
     @Test
     void updateArticle() throws Exception {

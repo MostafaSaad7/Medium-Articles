@@ -38,7 +38,6 @@ public class ArticleServiceImpl implements ArticleService
     public List<Article> getAllArticles(int page, int pageSize) {
         List<Article> allArticles = new ArrayList<>();
         Page<Article> articlePage;
-
         page = Math.max(0, page);
         do {
             articlePage = articleRepository.findAll(PageRequest.of(page, pageSize));
@@ -117,8 +116,6 @@ public class ArticleServiceImpl implements ArticleService
             throw new ArticleNotFoundException("Article with ID " + id + " not found");
         }
     }
-
-
 
     private void addLinks(Article article){
         List<Links> links = new ArrayList<>();
