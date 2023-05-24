@@ -1,5 +1,6 @@
 package com.vodafone.contoller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vodafone.model.Article;
 import com.vodafone.service.ArticleService;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,19 +41,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 class ArticlesControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private ArticleService articleService;
 
-    @InjectMocks
-    private ArticlesController articlesController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(articlesController).build();
-    }
+//    @InjectMocks
+//    private ArticlesController articlesController;
+//
+//    @BeforeEach
+//    void setUp() {
+//        MockitoAnnotations.openMocks(this);
+//        mockMvc = MockMvcBuilders.standaloneSetup(articlesController).build();
+//    }
 
     @Test
     void getArticles_ShouldReturnAllArticles() throws Exception {
@@ -74,20 +76,75 @@ class ArticlesControllerTest {
         verifyNoMoreInteractions(articleService);
     }
 
-
+    private String asJsonString(Object object) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(object);
+    }
     @Test
-    void getArticle() {
+    void getArticle() throws Exception {
+        Article article = new Article();
+        article.setName("test");
+        article.setId(1);
+
+        when(articleService.getArticleById(1)).thenReturn(article);
+
+
+        mockMvc.perform(get("/v1/articles/1").contentType(MediaType.APPLICATION_JSON_VALUE)).
+                andExpect(status().isOk()).andExpect(jsonPath("$.name").value("test"));
+
+        verify(articleService, times(1)).getArticleById(anyInt());
+        verifyNoMoreInteractions(articleService);
     }
 
     @Test
-    void addArticle() {
-    }
+    void addArticle() throws Exception {
+        Article article = new Article();
+        article.setName("test");
+        article.setId(1);
+        when(articleService.addArticle(any(Article.class))).thenReturn(article);
 
-    @Test
-    void updateArticle() {
-    }
+        mockMvc.perform(post("/v1/articles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(article)))
+                        .andExpect(status().isCreated())
+                        .andExpect(jsonPath("$.name").value("test"))
+                        .andExpect(jsonPath("$.id").value(1));;
 
+    }
     @Test
-    void deleteArticle() {
+    void updateArticle() throws Exception {
+        // Create a sample article
+        Article article = new Article();
+        article.setId(1);
+        article.setName("Test");
+
+        // Convert the article object to JSON string
+        String articleJson = asJsonString(article);
+
+        // Mock the service method
+        when(articleService.updateArticle(eq(1), any(Article.class))).thenReturn(article);
+
+        mockMvc.perform(post("/v1/articles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(article)));
+
+        article.setName("Test Article");
+        // Perform the PUT request to update the article
+        mockMvc.perform(put("/v1/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(articleJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Test Article"));
+    }
+    @Test
+    void deleteArticle() throws Exception {
+        // Mock the service method
+//        doThrow(new RuntimeException()).when(articleService).deleteArticle(1);
+        doNothing().when(articleService).deleteArticle(1);
+
+        // Perform the DELETE request to delete the article
+        mockMvc.perform(delete("/v1/articles/1"))
+                .andExpect(status().isNoContent());
     }
 }
