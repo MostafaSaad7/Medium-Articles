@@ -9,9 +9,6 @@ import com.vodafone.model.Author;
 import com.vodafone.repository.ArticleRepository;
 import com.vodafone.repository.AuthorRepository;
 
-
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -20,7 +17,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 
 import static org.mockito.BDDMockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,31 +87,36 @@ class ArticleServiceTest {
         verify(articleRepository, times(1)).findById(articleId);
     }
     @Test
-    void getArticlesByAuthorName() {
+    void getArticlesByAuthorNameTest_acceptAuthorName_returnArticlesForGivenAuthorName() {
         String authorName = "Mostafa Saad";
         Article article1 = new Article();
         article1.setAuthor(authorName);
         Article article2 = new Article();
         article2.setAuthor(authorName);
         List<Article> articles = Arrays.asList(article1, article2);
-
         when(articleRepository.findByAuthorContains(authorName)).thenReturn(articles);
+
 
         List<Article> result = articleService.getArticlesByAuthorName(authorName);
 
-        assertThat(result).hasSize(2)
+
+        assertThat(result).hasSize(articles.size())
                 .contains(article1, article2);
+
     }
 
     @Test
-    void addArticle() {
+    void addArticletTest_acceptArticleObject_returnCreatedArticle() {
+        int articleId=1;
+        String articleName="test";
+        String articleAuthor= "saad";
         Article article = new Article();
-        article.setAuthorId(1);
-        article.setName("test");
-        article.setAuthor("saad");
+        article.setAuthorId(articleId);
+        article.setName(articleName);
+        article.setAuthor(articleAuthor);
 
         Author author = new Author();
-        author.setName("saad");
+        author.setName(articleAuthor);
 
         when(articleRepository.existsById(anyInt())).thenReturn(false);
         when(authorRepository.existsById(anyInt())).thenReturn(true);
@@ -125,15 +126,13 @@ class ArticleServiceTest {
         Article article1 = articleService.addArticle(article);
 
         assertNotNull(article1);
-        // Add additional assertions if needed
-        assertEquals("test", article1.getName());
-        assertEquals("saad", article1.getAuthor());
-
+        assertEquals(articleName, article1.getName());
+        assertEquals(articleAuthor, article1.getAuthor());
 
     }
 
     @Test
-    void deleteArticle() {
+    void deleteArticleTest_acceptArticleId_verifyThatArticleHasBeenDeleted() {
         // Mock input parameters
         Integer articleId = 1;
 
@@ -150,8 +149,8 @@ class ArticleServiceTest {
         verify(articleRepository, times(1)).deleteById(articleId);
     }
     @Test
-    void updateArticle() {
-        // Create a sample article
+    void updateArticleTest_acceptArticleIdAndUpdatedArticle_returnUpdatedArticle() {
+
         Article existingArticle = new Article();
         existingArticle.setId(1); // Set the existing article's ID
         existingArticle.setAuthor("John Doe");
@@ -176,7 +175,7 @@ class ArticleServiceTest {
         verify(articleRepository, times(1)).save(existingArticle);
 
         // Verify the updated article properties
-        // Note in method logic existing article updated then saved agian to DB so just check if
+        // Note in method logic existing article updated then saved again to DB so just check if
         // existing article's field updated
         assertEquals(existingArticle.getAuthor(), result.getAuthor());
         assertEquals(existingArticle.getName(), result.getName());
