@@ -60,7 +60,7 @@ class ArticlesControllerTest {
         // Perform GET request
         mockMvc.perform(get("/v1/articles").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$.length()").value(articleList.size()));
 
         // Verify mock service interaction (Assertion)
         verify(articleService, times(1)).getAllArticles(anyInt(), anyInt());
@@ -101,7 +101,7 @@ class ArticlesControllerTest {
                         .andExpect(jsonPath("$.id").value(articleID));;
     }
     @Test
-    void updateArticle_sendRequestWithUpdatedArticle_expectArticleTobeUpdatedAndStatusOk() throws Exception {
+    void updateArticleTest_sendRequestWithUpdatedArticle_expectArticleTobeUpdatedAndStatusOk() throws Exception {
         int articleID = 1;
         String articleName= "test";
         String updatedArticleName = "Test Article";
@@ -129,23 +129,15 @@ class ArticlesControllerTest {
     void deleteArticleTest_sendDeleteRequestWithArticleIDForSavedArticle_expectArticleToBeDeleted() throws Exception {
         int articleId = 1 ;
         doNothing().when(articleService).deleteArticle(articleId);
-
-        mockMvc.perform(
-                delete("/v1/articles/1")
-                )
-                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/v1/articles/1")).
+                andExpect(status().isNoContent());
     }
 
     @Test
     void deleteArticleTest_sendDeleteRequestArticleIDForNonSavedArticle_expectBadRequest() throws Exception {
         int articleId = 1 ;
-
         doThrow(ArticleNotFoundException.class).when(articleService).deleteArticle(articleId);
-
-
-        mockMvc.perform(
-                        delete("/v1/articles/1")
-                )
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(delete("/v1/articles/1")).
+                andExpect(status().isBadRequest());
     }
 }
