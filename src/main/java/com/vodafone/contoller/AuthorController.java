@@ -1,6 +1,7 @@
 package com.vodafone.contoller;
 
-import com.vodafone.model.Article;
+import java.util.List;
+
 import com.vodafone.model.Author;
 import com.vodafone.service.AuthorService;
 
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/v1")
@@ -27,7 +27,7 @@ public class AuthorController {
     }
 
     @GetMapping(value = "/authors", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Author>> getArticles(
+    public ResponseEntity<List<Author>> getAuthors(
             @RequestParam(name = "author", required = false) String author,
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize
@@ -41,19 +41,19 @@ public class AuthorController {
 
     @PostMapping(value = "/authors" , produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<Author> addAuthor(@RequestBody Author author){
-        return ResponseEntity.ok(authorService.addAuthor(author));
+        return new ResponseEntity<>(authorService.addAuthor(author), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/authors/{authorName}")
-    public ResponseEntity<List<Author>> deleteAuthor(@PathVariable("authorName") String authorName) {
+    public ResponseEntity<List<Author>> deleteAuthorByName(@PathVariable("authorName") String authorName) {
         List<Author> authorList= authorService.deleteAuthorByName(authorName);
-        return ResponseEntity.ok(authorList);
+        return new ResponseEntity<>(authorList,HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(value = "authors/id/{authorId}")
-    public ResponseEntity<String> deleteAuthor(@PathVariable("authorId") int authorId) {
+    public ResponseEntity<String> deleteAuthorById(@PathVariable("authorId") int authorId) {
         authorService.deleteAuthorById(authorId);
-        return ResponseEntity.ok("Author Deleted.....");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping(value = "/authors/{authorId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Author> updateAuthor(@PathVariable(name = "authorId") Integer authorId, @RequestBody Author author) {
