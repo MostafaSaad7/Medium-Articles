@@ -63,7 +63,6 @@ class ArticleServiceTest {
         // Mock the articleRepository.findAll() method to return the mock page
         when(articleRepository.findAll(PageRequest.of(page, pageSize))).thenReturn(articlePage);
 
-
         // Call the getAllArticles method
         List<Article> result = articleService.getAllArticles(page, pageSize);
 
@@ -72,22 +71,24 @@ class ArticleServiceTest {
         verify(articleRepository, times(1)).findAll(any(PageRequest.class));
     }
     @Test
-    void getArticleById() {
-        // Create a test article
+    void getArticleByIdTest_acceptArticleId_returnArticleWithGivenId() {
+
+        int articleId = 1;
+        String articleName="Test Article";
         Article article = new Article();
-        article.setId(1);
-        article.setName("Test Article");
+        article.setId(articleId);
+        article.setName(articleName);
 
         // Mock the articleRepository.findById method to return the test article
-        when(articleRepository.findById(1)).thenReturn(Optional.of(article));
+        when(articleRepository.findById(articleId)).thenReturn(Optional.of(article));
 
-        Article result = articleService.getArticleById(1);
+        Article result = articleService.getArticleById(articleId);
 
         // Verify the result
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1);
-        assertThat(result.getName()).isEqualTo("Test Article");
-        verify(articleRepository, times(1)).findById(1);
+        assertThat(result.getId()).isEqualTo(articleId);
+        assertThat(result.getName()).isEqualTo(articleName);
+        verify(articleRepository, times(1)).findById(articleId);
     }
     @Test
     void getArticlesByAuthorName() {
