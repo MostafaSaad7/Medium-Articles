@@ -125,11 +125,13 @@ class ArticlesControllerTest {
                 .andExpect(jsonPath("$.name").value(updatedArticleName));
     }
     @Test
-    void deleteArticle() throws Exception {
-        doNothing().when(articleService).deleteArticle(1);
+    void deleteArticleTest_sendDeleteRequestWithArticleID_expectArticleToBeDeleted() throws Exception {
+        int articleId = 1 ;
+        doNothing().when(articleService).deleteArticle(articleId);
 
-        // Perform the DELETE request to delete the article
-        mockMvc.perform(delete("/v1/articles/1"))
+        mockMvc.perform(
+                delete("/v1/articles/1")
+                )
                 .andExpect(status().isNoContent());
     }
 }
