@@ -3,6 +3,7 @@ package com.vodafone.contoller;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vodafone.errorhandlling.ArticleNotFoundException;
 import com.vodafone.model.Article;
 import com.vodafone.service.ArticleService;
 
@@ -125,7 +126,7 @@ class ArticlesControllerTest {
                 .andExpect(jsonPath("$.name").value(updatedArticleName));
     }
     @Test
-    void deleteArticleTest_sendDeleteRequestWithArticleID_expectArticleToBeDeleted() throws Exception {
+    void deleteArticleTest_sendDeleteRequestWithArticleIDForSavedArticle_expectArticleToBeDeleted() throws Exception {
         int articleId = 1 ;
         doNothing().when(articleService).deleteArticle(articleId);
 
@@ -133,5 +134,18 @@ class ArticlesControllerTest {
                 delete("/v1/articles/1")
                 )
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteArticleTest_sendDeleteRequestArticleIDForNonSavedArticle_expectBadRequest() throws Exception {
+        int articleId = 1 ;
+
+        doThrow(ArticleNotFoundException.class).when(articleService).deleteArticle(articleId);
+
+
+        mockMvc.perform(
+                        delete("/v1/articles/1")
+                )
+                .andExpect(status().isBadRequest());
     }
 }
