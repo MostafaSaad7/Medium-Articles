@@ -1,40 +1,33 @@
 package com.vodafone.contoller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.List;
+
 import com.vodafone.model.Article;
 import com.vodafone.service.ArticleService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import javax.swing.*;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+
+
+import static org.mockito.BDDMockito.*;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -107,35 +100,32 @@ class ArticlesControllerTest {
                         .andExpect(jsonPath("$.id").value(articleID));;
     }
     @Test
-    void updateArticle() throws Exception {
-        // Create a sample article
+    void updateArticle_sendRequestWithUpdatedArticle_expectArticleTobeUpdatedAndStatusOk() throws Exception {
+        int articleID = 1;
+        String articleName= "test";
+        String updatedArticleName = "Test Article";
         Article article = new Article();
-        article.setId(1);
-        article.setName("Test");
+        article.setId(articleID);
+        article.setName(articleName);
 
         // Convert the article object to JSON string
         String articleJson = asJsonString(article);
-
         // Mock the service method
-        when(articleService.updateArticle(eq(1), any(Article.class))).thenReturn(article);
+        when(articleService.updateArticle(eq(articleID), any(Article.class))).thenReturn(article);
+
 
         mockMvc.perform(post("/v1/articles")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(article)));
 
-        article.setName("Test Article");
-        // Perform the PUT request to update the article
-        mockMvc.perform(put("/v1/articles/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(articleJson))
+        article.setName(updatedArticleName);
+        mockMvc.perform(put("/v1/articles/1").contentType(MediaType.APPLICATION_JSON).content(articleJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Test Article"));
+                .andExpect(jsonPath("$.id").value(articleID))
+                .andExpect(jsonPath("$.name").value(updatedArticleName));
     }
     @Test
     void deleteArticle() throws Exception {
-        // Mock the service method
-//        doThrow(new RuntimeException()).when(articleService).deleteArticle(1);
         doNothing().when(articleService).deleteArticle(1);
 
         // Perform the DELETE request to delete the article
