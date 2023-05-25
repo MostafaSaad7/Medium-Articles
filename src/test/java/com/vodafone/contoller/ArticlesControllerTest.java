@@ -57,21 +57,23 @@ class ArticlesControllerTest {
 //    }
 
     @Test
-    void getArticles_ShouldReturnAllArticles() throws Exception {
+    void getArticlesTest_sendGetRequest_shouldReturnAllArticles() throws Exception {
+        // Arrange
         // Prepare test data
         Article article1 = new Article();
         Article article2 = new Article();
         List<Article> articleList = Arrays.asList(article1, article2);
-
         // Configure mock service
         when(articleService.getAllArticles(anyInt(), anyInt())).thenReturn(articleList);
 
+
+        //Act + Assertion
         // Perform GET request
         mockMvc.perform(get("/v1/articles").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
-//
-//        // Verify mock service interaction
+
+        // Verify mock service interaction (Assertion)
         verify(articleService, times(1)).getAllArticles(anyInt(), anyInt());
         verifyNoMoreInteractions(articleService);
     }
