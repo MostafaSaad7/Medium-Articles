@@ -47,14 +47,10 @@ class ArticlesControllerTest {
     @MockBean
     private ArticleService articleService;
 
-//    @InjectMocks
-//    private ArticlesController articlesController;
-//
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//        mockMvc = MockMvcBuilders.standaloneSetup(articlesController).build();
-//    }
+    private String asJsonString(Object object) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(object);
+    }
 
     @Test
     void getArticlesTest_sendGetRequest_shouldReturnAllArticles() throws Exception {
@@ -65,7 +61,6 @@ class ArticlesControllerTest {
         List<Article> articleList = Arrays.asList(article1, article2);
         // Configure mock service
         when(articleService.getAllArticles(anyInt(), anyInt())).thenReturn(articleList);
-
 
         //Act + Assertion
         // Perform GET request
@@ -78,21 +73,18 @@ class ArticlesControllerTest {
         verifyNoMoreInteractions(articleService);
     }
 
-    private String asJsonString(Object object) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(object);
-    }
+
     @Test
-    void getArticle() throws Exception {
+    void getArticleByIDTest_SendGetRequest_shouldReturnArticleWithGivenID() throws Exception {
+        int articleID = 1;
+        String articleName= "test";
         Article article = new Article();
-        article.setName("test");
-        article.setId(1);
+        article.setName(articleName);
+        article.setId(articleID);
+        when(articleService.getArticleById(articleID)).thenReturn(article);
 
-        when(articleService.getArticleById(1)).thenReturn(article);
-
-
-        mockMvc.perform(get("/v1/articles/1").contentType(MediaType.APPLICATION_JSON_VALUE)).
-                andExpect(status().isOk()).andExpect(jsonPath("$.name").value("test"));
+        mockMvc.perform(get("/v1/articles/"+articleID).contentType(MediaType.APPLICATION_JSON_VALUE)).
+                andExpect(status().isOk()).andExpect(jsonPath("$.name").value(articleName));
 
         verify(articleService, times(1)).getArticleById(anyInt());
         verifyNoMoreInteractions(articleService);
