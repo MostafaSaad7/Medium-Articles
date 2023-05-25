@@ -1,51 +1,33 @@
 package com.vodafone.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vodafone.model.Article;
-import com.vodafone.model.Author;
-import com.vodafone.repository.ArticleRepository;
-import com.vodafone.repository.AuthorRepository;
-import com.vodafone.service.ArticleService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import javax.swing.*;
-
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
+import com.vodafone.model.Article;
+import com.vodafone.model.Author;
+import com.vodafone.repository.ArticleRepository;
+import com.vodafone.repository.AuthorRepository;
+
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -65,8 +47,11 @@ class ArticleServiceTest {
         }
     }
     @Test
-    void getAllArticles() {
-        // Create a list of articles for testing
+    void getAllArticlesTest_acceptPageAndPageSize_returnArticlesInThisPage() {
+
+        int page=0;
+        int pageSize=2;
+
         Article article1 = new Article();
         Article article2 = new Article();
         List<Article> articleList = Arrays.asList(article1, article2);
@@ -74,18 +59,17 @@ class ArticleServiceTest {
         // Create a mock page of articles
         Page<Article> articlePage = mock(Page.class);
         when(articlePage.getContent()).thenReturn(articleList);
-        when(articlePage.getTotalPages()).thenReturn(2);
-
+        when(articlePage.getTotalPages()).thenReturn(1);
         // Mock the articleRepository.findAll() method to return the mock page
-        when(articleRepository.findAll(PageRequest.of(0, 2))).thenReturn(articlePage);
-        when(articleRepository.findAll(PageRequest.of(1, 2))).thenReturn(articlePage);
+        when(articleRepository.findAll(PageRequest.of(page, pageSize))).thenReturn(articlePage);
+
 
         // Call the getAllArticles method
-        List<Article> result = articleService.getAllArticles(0, 2);
+        List<Article> result = articleService.getAllArticles(page, pageSize);
 
         // Verify the results
-        assertThat(result).hasSize(4).contains(article1, article2, article1, article2);
-        verify(articleRepository, times(2)).findAll(any(PageRequest.class));
+        assertThat(result).hasSize(pageSize).contains(article1, article2);
+        verify(articleRepository, times(1)).findAll(any(PageRequest.class));
     }
     @Test
     void getArticleById() {
