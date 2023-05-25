@@ -91,18 +91,20 @@ class ArticlesControllerTest {
     }
 
     @Test
-    void addArticle() throws Exception {
+    void addArticleTest_sendRequestIncludingArticleInBody_expectStatusCodeCreated() throws Exception {
+        int articleID = 1;
+        String articleName= "test";
         Article article = new Article();
-        article.setName("test");
-        article.setId(1);
+        article.setName(articleName);
+        article.setId(articleID);
         when(articleService.addArticle(any(Article.class))).thenReturn(article);
 
         mockMvc.perform(post("/v1/articles")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(article)))
                         .andExpect(status().isCreated())
-                        .andExpect(jsonPath("$.name").value("test"))
-                        .andExpect(jsonPath("$.id").value(1));;
+                        .andExpect(jsonPath("$.name").value(articleName))
+                        .andExpect(jsonPath("$.id").value(articleID));;
     }
     @Test
     void updateArticle() throws Exception {
