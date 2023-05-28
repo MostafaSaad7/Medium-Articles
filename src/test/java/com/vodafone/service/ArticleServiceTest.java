@@ -153,13 +153,13 @@ class ArticleServiceTest {
 
         Article existingArticle = new Article();
         existingArticle.setId(1); // Set the existing article's ID
-        existingArticle.setAuthor("John Doe");
+        existingArticle.setAuthor("Saad Mostafa");
         existingArticle.setName("Sample Article");
         existingArticle.setAuthorId(123);
 
         // Create a modified article with updated data
         Article updatedArticle = new Article();
-        updatedArticle.setAuthor("Jane Smith");
+        updatedArticle.setAuthor("Mostafa Saad");
         updatedArticle.setName("Updated Article");
         updatedArticle.setAuthorId(456);
 

@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.vodafone.model.Article;
 import com.vodafone.model.Author;
-import com.vodafone.repository.ArticleRepository;
 import com.vodafone.repository.AuthorRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
