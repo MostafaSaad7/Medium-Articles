@@ -29,7 +29,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.mockito.BDDMockito.*;
 
-
+/*
+ *
+ * Annotations used for integration testing of the entire application context,
+ * including the web layer and other components.
+ *
+ * you can use @WebMvcTest if you want to test only the relevant web components by loading
+ *  it into the Spring context,
+ * which makes the tests more focused and faster.
+ *
+ *
+ * */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
